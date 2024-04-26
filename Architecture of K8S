@@ -1,1 +1,12 @@
+Master - Slave architecture 
 
+1)Master Node (Control Plane)
+- Etcd database
+- API server
+- Controller
+- Scheduler
+
+2)Worker Node
+- Kubelet
+- Conatiner Runtime
+- Kube-proxy
