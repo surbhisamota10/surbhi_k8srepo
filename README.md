@@ -1,5 +1,6 @@
 Why kubernetes???
-Due to docker drawback which covers by Kubernetes 
+
+Docker drawback 
 
 1) single host in a docker on a single host we install docker and on that docker we create 100 container and all 100 container used resources from a single host if 80
 containers will take high resources then one of the container will die or process will destroy due to other taking high resources .
@@ -22,8 +23,15 @@ pod=== (container's cover) === label of conatiner
 without container your pod is nothing 
 cluster not communicate with container it communicate with pod.
 
+
+*******************************************************************************************************************************************************************************************
+
+K8S advantage
+
 1) k8s fix the single host problem if there is a pod down due to load or high resources taking by other then k8s auto. shift on another node
 
 2) Auto healing : API server heals the posd
 
-3) Auto scaling : handles buy repluca set 
+3) Auto scaling : handles buy replica set
+
+4) k8s have enterprise level support.
