@@ -1,0 +1,45 @@
+Command
+
+Create a replication controller yaml file from this site https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/
+vi replication.yaml
+
+    apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginx
+spec:
+  replicas: 3
+  selector:
+    app: nginx
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+  
+
+kubectl apply -f replication.yaml
+
+The output is similar to this if you create rc from above website 
+replicationcontroller/nginx created
+
+check status of replicationcontroller
+kubectl describe replicationcontrollers/nginx
+
+using below command we delete both replicationcontroller and pods
+kubectl delete rc replicationcontroller_name
+
+using below command we only delete rreplicationcontroller not pods
+kubectl delete  --cascade=orphan replicationcontroller_name
+
+kubectl rolling-update command is depricated now
+
+
+If we have any pod with label  app: nginx then rc acquire this pod 
