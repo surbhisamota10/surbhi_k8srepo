@@ -34,7 +34,17 @@ spec:
         ports:
         - containerPort: 80
 
-
+case : if we give app!=dev  then we cannt put it in metadata app =dev because its contradictory statement
+  matchExpressions:
+      - key: app
+        operator: NotIn
+        values:
+         - dev
+  template:
+    metadata:
+      name: test
+      labels:
+        app: test
 
 
 
