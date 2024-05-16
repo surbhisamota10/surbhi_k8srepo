@@ -1,0 +1,95 @@
+Replica SET
+
+3 pods are already available with label app=dev , app=test , app=prod
+
+
+  1) app!=dev   for this case opertaor IN used  
+  2) app=dev/test for this case acquire all those pods who's label is dev/prod/test.
+  3) app  for this case taking key is equals to app it doesnt matter what is value 
+
+1)
+vi rs.yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: grrasrs1
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+      - key: app
+        operator: NotIn
+        values:
+         - dev
+  template:
+    metadata:
+      name: test
+      labels:
+        app: test
+
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+
+
+
+
+2)
+vi rs.yaml
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: grrasrs1
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+         - test
+         - dev
+  template:
+    metadata:
+      name: test
+      labels:
+        app: test
+
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+3) 
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: grrasrs1
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+      - key: app
+        operator: Exists
+  template:
+    metadata:
+      name: test
+      labels:
+        app: test
+
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+
