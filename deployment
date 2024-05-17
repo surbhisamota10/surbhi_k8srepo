@@ -1,1 +1,59 @@
+vi deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.15.2
+        ports:
+        - containerPort: 80
 
+
+ kubectl apply -f deployment.yaml
+
+open 2 terminal and see 
+watch kubectl get deployment,rc,rs,pod --show-lables
+ 
+open 3 terminal and see
+watch rollout history deployment deploymentname  
+
+open 4 terminal and see
+watch describe deployment deploymentname
+
+ 
+We can change the image via below commands and also changed via edit the file deployment.yaml
+ kubectl set image deployment nginx-deployment nginx=nginx:latest --record=true
+ kubectl edit deployment nginx-deployment
+
+
+If we want to check on which revision what changes we made then check below command
+   kubectl rollout history deployment nginx-deployment --revision=1
+   kubectl rollout history deployment nginx-deployment --revision=2
+   kubectl rollout history deployment nginx-deployment --revision=3
+   kubectl rollout history deployment nginx-deployment --revision=4
+   kubectl rollout history deployment nginx-deployment --revision=5
+ 
+
+If we want to jump to any previon or new revision the do it with below command
+  kubectl rollout undo  deployment nginx-deployment --to-revision=3
+
+
+We can pause the rollout feature through below commands and in production this feature was paused
+  kubectl rollout pause  deployment nginx-deployment
+
+We can resume the rollout feature through command
+ kubectl rollout resume deployment nginx-deployment
+  
