@@ -22,6 +22,8 @@ spec:
         - containerPort: 80
 
 
+SEE ALL THE THINGS IN BELOW TERMINAL REPLICA SET CHANGES AND NEW POD CREATION AND VERSION OF IMAGE 
+
  kubectl apply -f deployment.yaml
 
 open 2 terminal and see 
