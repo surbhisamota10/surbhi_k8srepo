@@ -1,1 +1,165 @@
+Deployment strategy
 
+1) rolling-update
+2) recreate
+3) canary-deployment (blue-green deployment and red-black deployment)
+
+
+                                                                     1) rolling-update
+
+
+we can apply 2 values max-surge and max-unavailable
+
+Must we need to change image version and then play with deployment.yaml
+
+In max-surge first create the pod on new replica set then it delte from old replica set 
+In maxunavailable first it delete from existing replica set then it create in new replica set 
+
+
+vi deployment.yaml  (In this )
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.17.1
+        ports:
+- containerPort: 80
+
+________________________________________________________________________________________________________________________________________________________________________________________
+****We need to change the image version****
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.19.1
+        ports:
+        - containerPort: 80
+
+Now first 2 pod create in new replica set with version 1.19.1 and then terminate with older replica set
+
+
+______________________________________________________________________________________________________________________________________________________________________________________
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 3
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+Now first 3 pod create delete from   older replica set and then create in new replica set with latest  version 
+
+_________________________________________________________________________________________________________________________________________________________________________________
+
+                                                                 2)  Recreate 
+Note: Cannt use it in production because all pods terminate first and then create on new replica set but we can use it for testing purpose
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.18.1
+        ports:
+        - containerPort: 80
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 5
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
