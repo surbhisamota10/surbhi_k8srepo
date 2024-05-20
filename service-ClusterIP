@@ -1,0 +1,99 @@
+services
+
+ClusterIP
+
+vi web.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+  labels:
+    app: web-server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: web-server
+  template:
+    metadata:
+      labels:
+        app: web-server
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.23.1
+        ports:
+        - containerPort: 80
+
+
+vi db.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-server
+  labels:
+    app: db-server
+spec:
+  replicas: 4
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: db-server
+  template:
+    metadata:
+      labels:
+        app: db-server
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.23.1
+        ports:
+        - containerPort: 80
+
+- kubectl exec -it web-server-6c6fff6d75-wn4md /bin/bash                ( kubectl exec -it pod_name /bin/bash )
+after that you are inside the pod and then curl 
+ curl db-server_IP
+
+
+If I need to connect my db with web-server then i need to ping or curl db pod IP ,But incase if pod terminate with any reason then i need to connect with another pod this is an issue after
+that services concept comes. 
+
+We can create servcie with2 ways with command and also via yaml file. 
+
+1  way
+-- kubectl expose deployment db-server --type=ClusterIP --port=80 --target-port=80
+
+on second terminal :   watch kubectl get all 
+on third terminal :   watch  kubectl describe service db-server 
+If we delete db-pods then new pods create and notice that pod IP is showing in 3 terminal 
+ Now curl with service IP , now if db pod will delete then we dont need to create new entery points with pod IP we connect with service.
+
+But if web-server pod will delete with any reason then we need to connect again with new IP , So we also create new service for  web-server deployment
+
+vi websv.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: web-server   (jiss bhi deployment ki service banani hai uska label match hona chiaye yaha 
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+
+kubectl apply -f websv.yaml
+
+on second terminal :   watch kubectl get all 
+on third terminal :   watch  kubectl describe service web-server 
+now we can increase the replica of web-server deployment and 
+vi web.yaml
+kubectl create -f web.yaml
+
+on third terminal :   watch  kubectl describe service web-server  (all pods IPs showing here)
+
+Now curl web-server servcie IP on master node , worker node and on your browser(browser will not connect due to ClusterIP only for cluster )
