@@ -1,0 +1,26 @@
+NFS servre will be another server not master node
+
+First we need to setup a network volume or storage server
+Like : NFS
+
+yum install nfs -y
+
+create a directory 
+mkdir -p /common/volume
+
+chmod -R 777 /common/volume
+
+vi /etc/exports
+ /common/volume  *(no_root_squash,rw,sync)
+
+systemctl start nfs-server
+systemctl enable nfs-server
+
+if firewall active then add the service in it 
+firewall-cmd --list-all
+firewall-cmd --permanent --zone=public --add-service=nfs
+firewall-cmd --relaod
+
+exportfs -y
+
+Now 
