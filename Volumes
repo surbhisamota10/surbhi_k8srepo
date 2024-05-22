@@ -1,3 +1,5 @@
+https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+
 NFS servre will be another server not master node
 
 First we need to setup a network volume or storage server
@@ -23,4 +25,57 @@ firewall-cmd --relaod
 
 exportfs -y
 
-Now 
+Now on master node we need to create a persistent volume (pv)
+
+root@master:~# cat pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: reliance-volume
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: reliance-volume
+  mountOptions:
+    - hard
+    - nfsvers=4.1
+  nfs:
+    path: /common/volume
+    server: 65.0.107.51
+
+{
+learn about accessModes from k8s documentation:
+
+persistentVolumeReclaimPolicy: Recycle ( recycle means if we delete data from pvc then it delete from pv also
+persistentVolumeReclaimPolicy: Retain ( retain means if we delete data from pvc then it dosent delete from pv )
+
+storageClassName:  it means put your PV name because we have no of pv's .
+
+ path: /common/volume  ( nfs server path)
+ server: 65.0.107.51 ( nfs server IP)
+}
+
+kubectl get pv
+
+Now create a pvc 
+
+root@master:~# cat pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: reliance-power
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 3Gi
+  storageClassName: reliance-volume
+
+kubectl get pvc 
+kubectl get pv
