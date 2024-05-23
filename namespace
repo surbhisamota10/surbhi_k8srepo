@@ -1,0 +1,15 @@
+Why need namespace in k8s??
+
+Just giving an live example if we create a deployment with name web-server then we again cann't create deployment with same then namespace concept occurs.
+
+there is a company wipro they have 3 projects : project1 for development team, project2 for testing team, project3 for prodcution team
+Now they want to switch on k8s what they have options they need to create 3 cluster for the same but its costly and waste of resources then they create a custom namespace for all the 
+3 projects.
+
+kubectl get namespace
+kubectl get ns
+
+kubectl -n namespace_name get pods
+Eg: kubectl -n kube-system get pods ,kubectl -n default get pods
+
+kubectl create namespace
