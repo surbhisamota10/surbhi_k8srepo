@@ -1,0 +1,58 @@
+Resource Quota always applied on namespace not on a pod 
+
+
+kubectl get namespace
+kubectl create namespace project1
+kubectl create namespace project2
+
+kubectl -n project-1 get quota
+kubectl -n project-2 get quota
+
+vim project-1-quota.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata: 
+  name: project-1-quota
+  namespace: project-1
+spec:
+  hard:
+    pods: "2"
+    configmaps: "10"
+    secrets: "10"
+    services: "10"
+    persistentvolumeclaims: "50"
+
+vim project-2-quota.yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata: 
+  name: project-2-quota
+  namespace: project-2
+spec:
+  hard:
+    pods: "2"
+    secrets: "10"
+    persistentvolumeclaims: "10"
+
+kubectl -n project-1 apply -f project-1-quota.yaml
+kubectl -n project-2 apply -f project-2-quota.yaml
+
+kubectl -n project-1 get quota
+kubectl -n project-2 get quota
+
+kubectl -n project-1 describe quota
+kubectl -n project-2 describe quota
+
+kubectl run -n project-1 web-server --image=nginx
+kubectl -n project-1 get pods
+
+kubectl run -n project-1 web-server --image=nginx
+ We define pods limit 2 in resource quota now we cann't create more than that 
+
+kubectl run -n project-1 web-server2 --image=nginx  ( Yeh create bhi nahi krega and error bhi nahi degaa 
+kubectl -n project-1 get all  ( now replicaset and deployment created but pod not created due to limit set)
+
+
+
+
+
